@@ -47,7 +47,13 @@ const char* english[20] = {"Dream as if you live forever, Live as if you'll die 
 						   "A loaf of bread is better than song of many birds.", "Life is full of ups and downs."};
 
 
+/* 헤더 */
+void gotoXY(int, int);
+void setting();
 void printBox(int, int, int, int, int);
+void drawInformation(int, int, int, int);
+int mainMenu();
+int playGame(char);
 
 
 /* 콘솔에서 커서의 좌표를 (x, y)로 이동 */
@@ -59,8 +65,8 @@ void gotoXY(int x, int y) {
 
 /* 데이터베이스 (설정의 값들을 로드 및 저장) */
 int database(char type[20], int data) {
-	static int LIMIT_TIME = 5;
-	static int GOAL_SCORE = 50;
+	static int LIMIT_TIME = 15;
+	static int GOAL_SCORE = 60;
 	static int BEST_SCORE = 0;
 
 	// 제한 시간을 반환하는 명령
@@ -68,30 +74,130 @@ int database(char type[20], int data) {
 		return LIMIT_TIME;
 	}
 
-	if (!strcmp(type, "returnGoalScore")) {
+	// 목표 점수를 반환하는 명령
+	else if (!strcmp(type, "returnGoalScore")) {
 		return GOAL_SCORE;
 	}
 
-	return 0;
+	// 제한 시간을 저장하는 명령
+	else if (!strcmp(type, "saveTime")) {
+		LIMIT_TIME = data;
+		return 0;
+	}
+
+	// 목표 점수를 저장하는 명령
+	else if (!strcmp(type, "saveGoalScore")) {
+		GOAL_SCORE = data;
+		return 0;
+	}
+
+	// Unexpected Exception
+	else return -1;
 }
 
 
 /* 설정 */
 void setting() {
 	char ch;
+	int step = 0;
+	int LIMIT_TIME = database("returnTime", 0), GOAL_SCORE = database("returnGoalScore", 0);
+
 	system("cls");
 	printBox(0, 0, 119, 29, WHITE);
 
+	// 안내문 출력
 	gotoXY(53, 5);
 	printf("설          정");
 
-	while (1) {
-		ch = _getch();
-		if (ch == 13) return;
-	}
-
 	gotoXY(3, 28);
-	puts("엔터키를 눌러 저장하고 메인화면으로 돌아갑니다.");
+	puts("* 엔터키를 눌러 저장하고 메인화면으로 돌아갑니다.");
+	gotoXY(66, 28);
+	puts("* 방향키 ↑, ↓ 로 이동 / ←, → 로 값을 조정합니다.");
+
+	// 제한 시간 출력
+	printBox(47, 10, 61, 12, WHITE);
+	gotoXY(49, 11); printf(" 제한 시간");
+
+	printBox(62, 10, 72, 12, WHITE);
+	gotoXY(66, 11); printf("%02dS", LIMIT_TIME);
+
+	// 목표 점수 출력
+	printBox(47, 14, 61, 16, WHITE);
+	gotoXY(49, 15); printf(" 목표 점수");
+
+	printBox(62, 14, 72, 16, WHITE);
+	gotoXY(65, 15); printf("%03d점", GOAL_SCORE);
+
+	gotoXY(44, 11); printf("▒");
+	gotoXY(75, 11); printf("▒");
+
+	while (1) {
+		// 커서
+		if (step == 0) {
+			gotoXY(44, 11); printf("▒");
+			gotoXY(75, 11); printf("▒");
+			gotoXY(44, 15); printf("  ");
+			gotoXY(75, 15); printf("  ");
+		}
+		else if (step == 1) {
+			gotoXY(44, 11); printf("  ");
+			gotoXY(75, 11); printf("  ");
+			gotoXY(44, 15); printf("▒");
+			gotoXY(75, 15); printf("▒");
+		}
+
+		// 방향키 & 엔터키 입력받음
+		ch = _getch();
+		// 엔터 누르면 메인화면으로
+		if (ch == 13) return;
+		// 방향키
+		else if (ch == 0x00 || 0xE0) ch = _getch();
+		if (ch == 75 || ch == 77 || ch == 72 || ch == 80) {
+			switch (ch) {
+				/* LEFT (-) */
+				case 75: {
+					if (step == 0) {
+						if (LIMIT_TIME > 5) {
+							LIMIT_TIME -= 5;
+							database("saveTime", LIMIT_TIME);
+							gotoXY(66, 11); printf("%02dS", LIMIT_TIME);
+						}
+					}
+					else if (step == 1) {
+						if (GOAL_SCORE > 50) {
+							GOAL_SCORE -= 5;
+							database("saveGoalScore", GOAL_SCORE);
+							gotoXY(65, 15); printf("%03d점", GOAL_SCORE);
+						}
+					}
+					break;
+				}
+				/* RIGHT (+) */
+				case 77: {
+					if (step == 0) {
+						if (LIMIT_TIME < 20) {
+							LIMIT_TIME += 5;
+							database("saveTime", LIMIT_TIME);
+							gotoXY(66, 11); printf("%02dS", LIMIT_TIME);
+						}
+					}
+					else if (step == 1) {
+						if (GOAL_SCORE < 500) {
+							GOAL_SCORE += 10;
+							database("saveGoalScore", GOAL_SCORE);
+							gotoXY(65, 15); printf("%03d점", GOAL_SCORE);
+						}
+					}
+					break;
+				}
+				/* UP & DOWN */
+				case 72: case 80: {
+					if (step == 0) step = 1;
+					else if (step == 1) step = 0;
+				}
+			}
+		}
+	}
 }
 
 
@@ -155,15 +261,12 @@ int mainMenu() {
 
 	// 화면 출력
 	printBox(0, 0, 119, 29, WHITE);
-	gotoXY(53, 5);
-	printf("타  자  연  습");
+	gotoXY(53, 5); printf("타  자  연  습");
 	
 	// 하단 안내문 출력
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), WHITE);
-	gotoXY(3, 28);
-	puts("* SW활동장학생 컴퓨터공학부 이호은");
-	gotoXY(66, 28);
-	puts("* 방향키로 이동, 엔터로 선택, ESC를 눌러 종료하세요.");
+	gotoXY(3, 28); puts("* SW활동장학생 컴퓨터공학부 이호은");
+	gotoXY(66, 28); puts("* 방향키로 이동, 엔터로 선택, ESC를 눌러 종료하세요.");
 
 	while (1) {
 		// 화살표 출력
@@ -193,13 +296,13 @@ int mainMenu() {
 		gotoXY(x1 + 5, y[4]); printf("종    료"); printBox(46, 24, 73, 26, WHITE); puts(" ");
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), WHITE);
 
-		// 사용자가 W, S 혹은 방향키를 입력하면 메뉴가 선택되도록 함
+		// 사용자가 방향키를 입력하면 메뉴가 선택되도록 함
 		c = _getch();
 		if (c == 0x00 || c == 0xE0) c = _getch();
-		if (c == 'W' || c == 'w' || c == 'S' || c == 's' || c == 80 || c == 72) {
+		if (c == 80 || c == 72) {
 			switch (c) {
 				// UP
-				case 'W': case 'w': case 72: {
+				case 72: {
 					gotoXY(x1, y[now]); printf("  ");
 					gotoXY(x2, y[now]); printf("  ");
 					if (now > 0) now--;
@@ -207,7 +310,7 @@ int mainMenu() {
 					break;
 				}
 				// DOWN
-				case 'S': case 's': case 80: {
+				case 80: {
 					gotoXY(x1, y[now]); printf("  ");
 					gotoXY(x2, y[now]); printf("  ");
 					if (now < 4) now++;
@@ -301,6 +404,7 @@ int playGame(char type) {
 			ch = _getch();
 
 			// 백스페이스 처리
+			if (ch == 27) return 0;
 			if (ch == 8) {
 				if (count > 0) {
 					// 이전 입력값이 스페이스면 한 칸 지움
@@ -352,7 +456,7 @@ int playGame(char type) {
 					puts("* 잘못 입력하셨습니다 *");
 					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), WHITE);
 					gotoXY(5, 27);
-					printf("E N T E R : %50c", ' ');
+					printf("E N T E R : %98c", ' ');
 
 					score -= 10;
 
@@ -424,7 +528,7 @@ int playGame(char type) {
 			// 입력 박스 만들기
 			printBox(3, 26, 116, 28, WHITE);
 			gotoXY(5, 27);
-			printf("E N T E R : %50c", ' ');
+			printf("E N T E R : %98c", ' ');
 
 			if (FLAG == 1) {
 				// 문자 길이만큼 점수를 부여(영어는 그래도, 한글은 2byte이므로 1/2만큼)
@@ -440,10 +544,10 @@ int playGame(char type) {
 			}
 			
 			gotoXY(1, 15);
-			printf("%110c", ' ');
+			printf("%115c", ' ');
 
-			gotoXY(53, 18);
-			printf("%20c", ' ');
+			gotoXY(1, 18);
+			printf("%115c", ' ');
 
 			// 난수 생성
 			randomV = rand() % 15;
@@ -500,7 +604,7 @@ int playGame(char type) {
 				system("cls");
 				printBox(0, 0, 119, 29, WHITE);
 				gotoXY(40, 3);
-				puts("축하합니다! 목표 점수 %3점을 달성했습니다!", goal);
+				printf("축하합니다! 목표 점수 %3d점을 달성했습니다!", goal);
 				gotoXY(38, 5);
 				puts("다시 시도하시겠습니까? (예 : Y / 아니오 : N)");
 
