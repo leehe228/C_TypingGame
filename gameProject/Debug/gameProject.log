@@ -1,0 +1,10 @@
+﻿  main.c
+C:\Users\hoeun\source\repos\gameProject\gameProject\main.c(284,47): warning C4047: '=': 'char'의 간접 참조 수준이 'void *'과(와) 다릅니다.
+C:\Users\hoeun\source\repos\gameProject\gameProject\main.c(306,30): warning C4047: '=': 'char'의 간접 참조 수준이 'void *'과(와) 다릅니다.
+C:\Users\hoeun\source\repos\gameProject\gameProject\main.c(311,30): warning C4047: '=': 'char'의 간접 참조 수준이 'void *'과(와) 다릅니다.
+C:\Users\hoeun\source\repos\gameProject\gameProject\main.c(316,30): warning C4047: '=': 'char'의 간접 참조 수준이 'void *'과(와) 다릅니다.
+C:\Users\hoeun\source\repos\gameProject\gameProject\main.c(317,30): warning C4047: '=': 'char'의 간접 참조 수준이 'void *'과(와) 다릅니다.
+C:\Users\hoeun\source\repos\gameProject\gameProject\main.c(358,51): warning C4047: '=': 'char'의 간접 참조 수준이 'void *'과(와) 다릅니다.
+C:\Users\hoeun\source\repos\gameProject\gameProject\main.c(479,49): warning C4047: '=': 'char'의 간접 참조 수준이 'void *'과(와) 다릅니다.
+C:\Users\hoeun\source\repos\gameProject\gameProject\main.c(501,73): warning C4020: 'puts': 실제 매개 변수가 너무 많습니다.
+  gameProject.vcxproj -> C:\Users\hoeun\source\repos\gameProject\Debug\gameProject.exe
