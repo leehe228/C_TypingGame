@@ -175,7 +175,7 @@ void setting() {
 				/* RIGHT (+) */
 				case 77: {
 					if (step == 0) {
-						if (LIMIT_TIME < 20) {
+						if (LIMIT_TIME < 25) {
 							LIMIT_TIME += 5;
 							database("saveTime", LIMIT_TIME);
 							gotoXY(66, 11); printf("%02dS", LIMIT_TIME);
@@ -291,7 +291,7 @@ int mainMenu() {
 		else SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), GRAY);
 		gotoXY(x1 + 5, y[3]); printf("설    정"); printBox(46, 21, 73, 23, WHITE);
 
-		if (now == 4) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), WHITE);
+		if (now == 4) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), RED);
 		else SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), GRAY);
 		gotoXY(x1 + 5, y[4]); printf("종    료"); printBox(46, 24, 73, 26, WHITE); puts(" ");
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), WHITE);
